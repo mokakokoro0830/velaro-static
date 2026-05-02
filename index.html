@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VELARO — Private Island Resort</title>
+<meta name="description" content="A private luxury island resort in the Indian Ocean. Thirty villas. One island. Where wind meets water.">
+<meta property="og:title" content="VELARO — Private Island Resort">
+<meta property="og:description" content="Where wind meets water. A private island resort in the Indian Ocean.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Nav -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">VELARO</a>
+    <nav class="nav__links">
+      <a href="#villas">Villas</a>
+      <a href="#experiences">Experiences</a>
+      <a href="#location">Location</a>
+      <a href="#reserve" class="nav__cta">Reserve</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <canvas class="hero__canvas" id="hero-canvas"></canvas>
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <p class="hero__eyebrow reveal">Private Island Resort &middot; Indian Ocean</p>
+    <h1 class="hero__title reveal reveal-d1">VELARO</h1>
+    <p class="hero__tagline reveal reveal-d2">Where Wind Meets Water</p>
+    <a href="#villas" class="hero__cta reveal reveal-d3">Discover</a>
+  </div>
+  <div class="hero__scroll-hint">
+    <span class="hero__scroll-line"></span>
+    <span class="hero__scroll-text">scroll</span>
+  </div>
+</section>
+
+<!-- Arrival -->
+<section class="arrival">
+  <div class="arrival__inner">
+    <div class="arrival__text reveal">
+      <span class="arrival__eyebrow">A Place Apart</span>
+      <h2 class="arrival__heading">Thirty villas.<br>One private island.<br>No clocks.</h2>
+    </div>
+    <div class="arrival__image-wrap reveal reveal-d1">
+      <img src="images/arrival.jpg" alt="Aerial view of VELARO island" class="arrival__img">
+    </div>
+    <div class="arrival__copy reveal reveal-d2">
+      <p>Anchored in the heart of the Indian Ocean, VELARO is a place where the only schedule is the tide. Thirty overwater villas, a coral-fringed reef, and an editorial silence that cannot be manufactured.</p>
+      <p>We built nothing that didn't need to be built. We cleared nothing that didn't need to go. What remains is the island as it always was — and you, finally still.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Villas -->
+<section class="villas" id="villas">
+  <div class="villas__header reveal">
+    <span class="villas__eyebrow">Accommodations</span>
+    <h2 class="villas__heading">The Villas</h2>
+  </div>
+  <div class="villas__grid">
+
+    <article class="villa-card">
+      <div class="villa-card__media">
+        <img src="images/villa-overwater.jpg" alt="Overwater Villa" class="villa-card__img">
+      </div>
+      <div class="villa-card__body">
+        <span class="villa-card__num">01</span>
+        <h3 class="villa-card__name">Overwater Villa</h3>
+        <p class="villa-card__desc">Glass-floor lagoon suite suspended above the reef. Private plunge pool, direct ocean access.</p>
+        <span class="villa-card__price">From ¥250,000 / night</span>
+      </div>
+    </article>
+
+    <article class="villa-card">
+      <div class="villa-card__media">
+        <img src="images/villa-beach.jpg" alt="Beach Villa" class="villa-card__img">
+      </div>
+      <div class="villa-card__body">
+        <span class="villa-card__num">02</span>
+        <h3 class="villa-card__name">Beach Villa</h3>
+        <p class="villa-card__desc">Directly on the sand. Outdoor rainfall shower, seamless indoor-outdoor living space.</p>
+        <span class="villa-card__price">From ¥200,000 / night</span>
+      </div>
+    </article>
+
+    <article class="villa-card">
+      <div class="villa-card__media">
+        <img src="images/villa-sunrise.jpg" alt="Sunrise Pavilion" class="villa-card__img">
+      </div>
+      <div class="villa-card__body">
+        <span class="villa-card__num">03</span>
+        <h3 class="villa-card__name">Sunrise Pavilion</h3>
+        <p class="villa-card__desc">East-facing, the island's highest point. Open-air bathtub, horizon view at dawn.</p>
+        <span class="villa-card__price">From ¥180,000 / night</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- Experiences -->
+<section class="experiences" id="experiences">
+  <div class="exp__header reveal">
+    <span class="exp__eyebrow">What We Offer</span>
+    <h2 class="exp__heading">Experiences</h2>
+  </div>
+  <div class="exp__grid">
+    <div class="exp__item reveal">
+      <div class="exp__img-wrap">
+        <img src="images/exp-ocean.jpg" alt="Ocean" class="exp__img" loading="lazy">
+      </div>
+      <h3 class="exp__name">Ocean</h3>
+      <p class="exp__desc">Guided reef snorkeling, sunset sailing, manta ray night dives.</p>
+    </div>
+    <div class="exp__item reveal reveal-d1">
+      <div class="exp__img-wrap">
+        <img src="images/exp-wellness.jpg" alt="Wellness" class="exp__img" loading="lazy">
+      </div>
+      <h3 class="exp__name">Wellness</h3>
+      <p class="exp__desc">Balinese spa rituals, open-air yoga pavilion, sound healing at dusk.</p>
+    </div>
+    <div class="exp__item reveal reveal-d2">
+      <div class="exp__img-wrap">
+        <img src="images/exp-dining.jpg" alt="Dining" class="exp__img" loading="lazy">
+      </div>
+      <h3 class="exp__name">Dining</h3>
+      <p class="exp__desc">Private beach dinners, daily market tasting menu, midnight fire pits.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Location -->
+<section class="location" id="location">
+  <div class="location__inner">
+    <div class="location__text reveal">
+      <span class="location__eyebrow">Getting Here</span>
+      <h2 class="location__heading">The Indian Ocean.<br>45 minutes<br>by seaplane.</h2>
+      <p class="location__body">VELARO lies 45 minutes by seaplane from Malé International Airport. We arrange all transfers. The resort is open October through May.</p>
+      <a href="#reserve" class="location__link">Plan your stay →</a>
+    </div>
+    <div class="location__visual reveal reveal-d1">
+      <img src="images/location-seaplane.jpg" alt="Seaplane approach to VELARO" class="location__img" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- Reserve -->
+<section class="reserve" id="reserve">
+  <div class="reserve__inner">
+    <span class="reserve__eyebrow reveal">Reservations</span>
+    <h2 class="reserve__heading reveal reveal-d1">Begin your stay.</h2>
+    <p class="reserve__sub reveal reveal-d2">Availability is limited to thirty villas. We recommend booking at least three months in advance.</p>
+    <form class="reserve__form reveal reveal-d3" id="reserve-form">
+      <div class="reserve__row">
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-checkin">Arrival</label>
+          <input class="reserve__input" id="r-checkin" type="date" name="checkin">
+          <span class="reserve__underline"></span>
+        </div>
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-checkout">Departure</label>
+          <input class="reserve__input" id="r-checkout" type="date" name="checkout">
+          <span class="reserve__underline"></span>
+        </div>
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-guests">Guests</label>
+          <select class="reserve__input reserve__select" id="r-guests" name="guests">
+            <option value="1">1 Guest</option>
+            <option value="2" selected>2 Guests</option>
+            <option value="3">3 Guests</option>
+            <option value="4">4+ Guests</option>
+          </select>
+          <span class="reserve__underline"></span>
+        </div>
+      </div>
+      <button class="reserve__btn" type="submit">
+        <span>Check Availability</span>
+        <span class="reserve__btn-arrow">→</span>
+      </button>
+      <p class="reserve__note">Or reach us at <a href="mailto:reservations@velaro.com">reservations@velaro.com</a></p>
+    </form>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <p class="footer__logo">VELARO</p>
+      <p class="footer__tagline">Where Wind Meets Water</p>
+    </div>
+    <div class="footer__cols">
+      <div class="footer__col">
+        <p class="footer__col-title">Resort</p>
+        <a href="#villas">Villas</a>
+        <a href="#experiences">Experiences</a>
+        <a href="#location">Location</a>
+      </div>
+      <div class="footer__col">
+        <p class="footer__col-title">Contact</p>
+        <a href="mailto:reservations@velaro.com">reservations@velaro.com</a>
+        <a href="#">Instagram</a>
+      </div>
+    </div>
+  </div>
+  <p class="footer__copy">© 2026 VELARO &mdash; A fictional brand created as a portfolio piece.</p>
+</footer>
+
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="js/webgl.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
