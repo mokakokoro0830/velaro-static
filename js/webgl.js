@@ -1,12 +1,70 @@
 import * as THREE from 'three';
 
-// ─── Vertex shader (shared) ───────────────────────────────────────────
-const vertexShader = /* glsl */`
+// ─── Background vertex shader ────────────────────────────────────────────
+const bgVertexShader = /* glsl */`
   uniform float uTime;
-  uniform float uVelocity;   // scroll velocity for hero
-  uniform vec2  uMouse;      // UV-space mouse (0-1) for ripple
-  uniform float uHover;      // 0→1 lerped on hover
-  uniform float uRippleMode; // 0=scroll-only  1=ripple+scroll
+  uniform float uVelocity;
+  varying vec2 vUv;
+
+  void main() {
+    vUv = uv;
+    vec3 p = position;
+
+    // Wave distortion driven by scroll velocity
+    p.z += sin(uv.x * 12.0 + uTime * 1.5) * uVelocity * 0.08;
+    p.z += sin(uv.y * 10.0 + uTime * 1.2) * uVelocity * 0.06;
+    p.z += cos(uv.x * 7.0 + uv.y * 5.0 + uTime * 0.9) * uVelocity * 0.04;
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+  }
+`;
+
+// ─── Background fragment shader ──────────────────────────────────────────
+const bgFragmentShader = /* glsl */`
+  uniform sampler2D uTexture;
+  uniform float     uTime;
+  uniform float     uVelocity;
+  uniform float     uProgress; // 0–1 through full page
+
+  varying vec2 vUv;
+
+  void main() {
+    // Slow parallax: zoom out + drift as we scroll
+    vec2 uv = vUv;
+    float zoom = 1.0 + uProgress * 0.18;
+    uv = (uv - 0.5) / zoom + 0.5;
+    uv.y += uProgress * 0.06;
+
+    // Chromatic aberration on scroll
+    float shift = abs(uVelocity) * 0.006;
+    float r = texture2D(uTexture, uv + vec2(shift,  0.0)).r;
+    float g = texture2D(uTexture, uv                    ).g;
+    float b = texture2D(uTexture, uv - vec2(shift,  0.0)).b;
+
+    vec3 col = vec3(r, g, b);
+
+    // Subtle vignette
+    float d = length(vUv - 0.5) * 1.4;
+    col *= 1.0 - d * d * 0.3;
+
+    // Darken as scroll deepens
+    col *= 1.0 - uProgress * 0.28;
+
+    // Shimmer — fades out as page darkens
+    float shimmer = sin(vUv.x * 60.0 - uTime * 2.5) * 0.5 + 0.5;
+    shimmer      *= sin(vUv.y * 40.0 + uTime * 1.8) * 0.5 + 0.5;
+    col          += shimmer * 0.014 * (1.0 - uProgress);
+
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
+
+// ─── Ripple vertex shader (villa cards) ──────────────────────────────────
+const rippleVertexShader = /* glsl */`
+  uniform float uTime;
+  uniform float uVelocity;
+  uniform vec2  uMouse;
+  uniform float uHover;
 
   varying vec2 vUv;
 
@@ -14,26 +72,23 @@ const vertexShader = /* glsl */`
     vUv = uv;
     vec3 p = position;
 
-    // Scroll wave distortion (hero)
-    float vel = abs(uVelocity);
+    // Scroll wave
     p.z += sin(uv.x * 10.0 + uTime * 2.0) * uVelocity * 0.10;
     p.z += sin(uv.y *  8.0 + uTime * 1.4) * uVelocity * 0.07;
 
-    // Hover ripple (villa cards)
-    if (uRippleMode > 0.5) {
-      vec2  d    = uv - uMouse;
-      float dist = length(d);
-      float wave = sin(dist * 28.0 - uTime * 7.0) * uHover * 0.035;
-      wave *= smoothstep(0.65, 0.0, dist);
-      p.z += wave;
-    }
+    // Hover ripple
+    vec2  d    = uv - uMouse;
+    float dist = length(d);
+    float wave = sin(dist * 28.0 - uTime * 7.0) * uHover * 0.035;
+    wave *= smoothstep(0.65, 0.0, dist);
+    p.z  += wave;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
   }
 `;
 
-// ─── Fragment shader (shared) ─────────────────────────────────────────
-const fragmentShader = /* glsl */`
+// ─── Ripple fragment shader ───────────────────────────────────────────────
+const rippleFragmentShader = /* glsl */`
   uniform sampler2D uTexture;
   uniform float     uVelocity;
   uniform float     uHover;
@@ -41,20 +96,18 @@ const fragmentShader = /* glsl */`
   varying vec2 vUv;
 
   void main() {
-    // Chromatic aberration on scroll
     float shift = abs(uVelocity) * 0.007;
     float r = texture2D(uTexture, vUv + vec2(shift,  0.0)).r;
     float g = texture2D(uTexture, vUv                    ).g;
     float b = texture2D(uTexture, vUv - vec2(shift,  0.0)).b;
     float a = texture2D(uTexture, vUv                    ).a;
 
-    // Subtle brightness lift on hover
     vec3 col = vec3(r, g, b) * (1.0 + uHover * 0.06);
     gl_FragColor = vec4(col, a);
   }
 `;
 
-// ─── Gradient placeholder texture ─────────────────────────────────────
+// ─── Gradient placeholder texture ────────────────────────────────────────
 function makeGradient(c1, c2, w = 512, h = 512) {
   const cv  = Object.assign(document.createElement('canvas'), { width: w, height: h });
   const ctx = cv.getContext('2d');
@@ -66,62 +119,54 @@ function makeGradient(c1, c2, w = 512, h = 512) {
   return new THREE.CanvasTexture(cv);
 }
 
-// Placeholder palettes (replaced by real images when /img generates them)
-const HERO_COLORS   = ['#7FAEC4', '#EDE5DA'];
-const VILLA_COLORS  = [
-  ['#B8D4E0', '#7FAEC4'],
-  ['#E8D5B8', '#C4A882'],
-  ['#F5EBD8', '#D4C4B0'],
-];
-
-// ─── Shared scroll state ──────────────────────────────────────────────
+// ─── Shared scroll state ──────────────────────────────────────────────────
 let scrollY      = window.scrollY;
 let prevScrollY  = scrollY;
 let rawVelocity  = 0;
-let smoothVelocity = 0;
+let smoothVel    = 0;
+let scrollProgress = 0;
 
 window.addEventListener('scroll', () => {
-  scrollY     = window.scrollY;
-  rawVelocity = scrollY - prevScrollY;
-  prevScrollY = scrollY;
+  const newY  = window.scrollY;
+  // Clamp to ±60px per frame so programmatic jumps don't blow up the shader
+  rawVelocity = Math.max(-60, Math.min(60, newY - prevScrollY));
+  prevScrollY = newY;
+  scrollY     = newY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  scrollProgress  = maxScroll > 0 ? newY / maxScroll : 0;
 }, { passive: true });
 
-// ═══════════════════════════════════════════════════════════════════════
-// HERO WebGL
-// ═══════════════════════════════════════════════════════════════════════
-function initHero() {
-  const canvas = document.getElementById('hero-canvas');
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKGROUND — single fixed full-viewport canvas
+// ═══════════════════════════════════════════════════════════════════════════
+function initBackground() {
+  const canvas = document.getElementById('webgl-bg');
   if (!canvas) return;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  const scene    = new THREE.Scene();
-  const camera   = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
   function resize() {
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    renderer.setSize(w, h, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
   }
   resize();
   window.addEventListener('resize', resize);
 
-  // Plane fills viewport via ortho camera
-  const geo = new THREE.PlaneGeometry(2, 2, 40, 40);
+  const geo = new THREE.PlaneGeometry(2, 2, 48, 32);
   const mat = new THREE.ShaderMaterial({
-    vertexShader,
-    fragmentShader,
+    vertexShader:   bgVertexShader,
+    fragmentShader: bgFragmentShader,
     uniforms: {
-      uTime:       { value: 0 },
-      uVelocity:   { value: 0 },
-      uMouse:      { value: new THREE.Vector2(0.5, 0.5) },
-      uHover:      { value: 0 },
-      uRippleMode: { value: 0 },
-      uTexture:    { value: makeGradient(...HERO_COLORS, 1024, 512) },
+      uTime:     { value: 0 },
+      uVelocity: { value: 0 },
+      uProgress: { value: 0 },
+      uTexture:  { value: makeGradient('#7FAEC4', '#EDE5DA', 1024, 512) },
     },
   });
 
-  // Load real image if available
   const loader = new THREE.TextureLoader();
   loader.load('images/hero.jpg',
     tex => { tex.colorSpace = THREE.SRGBColorSpace; mat.uniforms.uTexture.value = tex; },
@@ -131,30 +176,41 @@ function initHero() {
   scene.add(new THREE.Mesh(geo, mat));
 
   let t = 0;
-  function tick() {
+  (function tick() {
     requestAnimationFrame(tick);
     t += 0.016;
-    smoothVelocity += (rawVelocity - smoothVelocity) * 0.08;
+    smoothVel += (rawVelocity - smoothVel) * 0.08;
 
     mat.uniforms.uTime.value     = t;
-    mat.uniforms.uVelocity.value = smoothVelocity * 0.04;
+    mat.uniforms.uVelocity.value = smoothVel * 0.04;
+    mat.uniforms.uProgress.value = scrollProgress;
+
     renderer.render(scene, camera);
-  }
-  tick();
+  })();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// VILLA RIPPLE WebGL (one renderer per card, lightweight)
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// VILLA RIPPLE — lightweight per-card canvas
+// ═══════════════════════════════════════════════════════════════════════════
 function initVillaRipples() {
   const cards = document.querySelectorAll('.villa-card');
   if (!cards.length) return;
+
+  const COLORS = [
+    ['#B8D4E0', '#7FAEC4'],
+    ['#E8D5B8', '#C4A882'],
+    ['#F5EBD8', '#D4C4B0'],
+  ];
+  const SRCS = [
+    'images/villa-overwater.jpg',
+    'images/villa-beach.jpg',
+    'images/villa-sunrise.jpg',
+  ];
 
   cards.forEach((card, idx) => {
     const media = card.querySelector('.villa-card__media');
     if (!media) return;
 
-    // Create canvas overlay
     const canvas = document.createElement('canvas');
     canvas.className = 'ripple-canvas';
     media.appendChild(canvas);
@@ -167,23 +223,20 @@ function initVillaRipples() {
 
     const geo = new THREE.PlaneGeometry(2, 2, 36, 36);
     const mat = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
+      vertexShader:   rippleVertexShader,
+      fragmentShader: rippleFragmentShader,
       uniforms: {
-        uTime:       { value: 0 },
-        uVelocity:   { value: 0 },
-        uMouse:      { value: new THREE.Vector2(0.5, 0.5) },
-        uHover:      { value: 0 },
-        uRippleMode: { value: 1 },
-        uTexture:    { value: makeGradient(...VILLA_COLORS[idx % VILLA_COLORS.length]) },
+        uTime:     { value: 0 },
+        uVelocity: { value: 0 },
+        uMouse:    { value: new THREE.Vector2(0.5, 0.5) },
+        uHover:    { value: 0 },
+        uTexture:  { value: makeGradient(...COLORS[idx % COLORS.length]) },
       },
       transparent: true,
     });
 
-    // Load real villa image
-    const srcs = ['images/villa-overwater.jpg', 'images/villa-beach.jpg', 'images/villa-sunrise.jpg'];
     const loader = new THREE.TextureLoader();
-    loader.load(srcs[idx],
+    loader.load(SRCS[idx],
       tex => { tex.colorSpace = THREE.SRGBColorSpace; mat.uniforms.uTexture.value = tex; },
       undefined, () => {}
     );
@@ -191,9 +244,7 @@ function initVillaRipples() {
     scene.add(new THREE.Mesh(geo, mat));
 
     function resizeCanvas() {
-      const w = media.clientWidth;
-      const h = media.clientHeight;
-      renderer.setSize(w, h, false);
+      renderer.setSize(media.clientWidth, media.clientHeight, false);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     }
     resizeCanvas();
@@ -202,11 +253,13 @@ function initVillaRipples() {
     let isHovered   = false;
     let targetHover = 0;
     let t = 0;
+    let animId = null;
 
     media.addEventListener('mouseenter', () => {
       isHovered   = true;
       targetHover = 1;
       canvas.classList.add('active');
+      if (!animId) tick();
     });
     media.addEventListener('mouseleave', () => {
       isHovered   = false;
@@ -220,7 +273,6 @@ function initVillaRipples() {
       );
     });
 
-    let animId = null;
     function tick() {
       animId = requestAnimationFrame(tick);
       t += 0.016;
@@ -228,7 +280,6 @@ function initVillaRipples() {
       mat.uniforms.uTime.value      = t;
       mat.uniforms.uVelocity.value += (rawVelocity * 0.02 - mat.uniforms.uVelocity.value) * 0.1;
 
-      // Stop rendering when fully idle (save GPU)
       if (!isHovered && mat.uniforms.uHover.value < 0.005) {
         canvas.classList.remove('active');
         cancelAnimationFrame(animId);
@@ -237,14 +288,9 @@ function initVillaRipples() {
       }
       renderer.render(scene, camera);
     }
-
-    // Start loop on hover
-    media.addEventListener('mouseenter', () => {
-      if (!animId) tick();
-    });
   });
 }
 
-// ─── Boot ─────────────────────────────────────────────────────────────
-initHero();
+// ─── Boot ─────────────────────────────────────────────────────────────────
+initBackground();
 initVillaRipples();
