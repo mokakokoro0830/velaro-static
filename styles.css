@@ -206,13 +206,11 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 1;
   padding: 140px 0;
-  background: var(--white);
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 140px,
-    #000 calc(100% - 140px), transparent 100%);
-  mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 140px,
-    #000 calc(100% - 140px), transparent 100%);
+  background: linear-gradient(to bottom,
+    transparent 0px,
+    var(--white) 140px,
+    var(--white) calc(100% - 140px),
+    transparent 100%);
 }
 .arrival__inner {
   max-width: 1200px;
@@ -263,13 +261,11 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 1;
   padding: 120px 48px;
-  background: var(--sand);
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 120px,
-    #000 calc(100% - 120px), transparent 100%);
-  mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 120px,
-    #000 calc(100% - 120px), transparent 100%);
+  background: linear-gradient(to bottom,
+    transparent 0px,
+    var(--sand) 120px,
+    var(--sand) calc(100% - 120px),
+    transparent 100%);
 }
 .villas__header {
   max-width: 1200px;
@@ -359,13 +355,11 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 1;
   padding: 140px 48px;
-  background: var(--white);
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 140px,
-    #000 calc(100% - 140px), transparent 100%);
-  mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 140px,
-    #000 calc(100% - 140px), transparent 100%);
+  background: linear-gradient(to bottom,
+    transparent 0px,
+    var(--white) 140px,
+    var(--white) calc(100% - 140px),
+    transparent 100%);
 }
 .exp__header {
   max-width: 1200px;
@@ -420,14 +414,12 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 1;
   padding: 0;
-  background: var(--dark);
+  background: linear-gradient(to bottom,
+    transparent 0px,
+    var(--dark) 120px,
+    var(--dark) calc(100% - 120px),
+    transparent 100%);
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 120px,
-    #000 calc(100% - 120px), transparent 100%);
-  mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 120px,
-    #000 calc(100% - 120px), transparent 100%);
 }
 .location__inner {
   max-width: 1400px;
@@ -487,14 +479,12 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 1;
   padding: 160px 48px;
-  background: var(--sand);
+  background: linear-gradient(to bottom,
+    transparent 0px,
+    var(--sand) 140px,
+    var(--sand) calc(100% - 140px),
+    transparent 100%);
   text-align: center;
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 140px,
-    #000 calc(100% - 140px), transparent 100%);
-  mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 140px,
-    #000 calc(100% - 140px), transparent 100%);
 }
 .reserve__inner { max-width: 740px; margin: 0 auto; }
 .reserve__eyebrow {
@@ -594,13 +584,12 @@ a { color: inherit; text-decoration: none; }
 .footer {
   position: relative;
   z-index: 1;
-  background: var(--dark);
+  background: linear-gradient(to bottom,
+    transparent 0px,
+    var(--dark) 100px,
+    var(--dark) 100%);
   padding: 80px 48px 48px;
   color: var(--stone);
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 100px, #000 100%);
-  mask-image: linear-gradient(to bottom,
-    transparent 0px, #000 100px, #000 100%);
 }
 .footer__inner {
   max-width: 1200px;

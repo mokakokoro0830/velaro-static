@@ -7,15 +7,14 @@ const bgVertexShader = /* glsl */`
   varying vec2 vUv;
 
   void main() {
-    vUv = uv;
-    vec3 p = position;
+    // UV-space wave distortion — actually visible with orthographic camera
+    // (Z displacement has no effect with ortho projection and causes clipping)
+    vec2 wv = uv;
+    wv.x += sin(uv.y * 12.0 + uTime * 1.2) * uVelocity * 0.012;
+    wv.y += sin(uv.x * 10.0 + uTime * 0.9) * uVelocity * 0.010;
+    vUv = wv;
 
-    // Wave distortion driven by scroll velocity
-    p.z += sin(uv.x * 12.0 + uTime * 1.5) * uVelocity * 0.08;
-    p.z += sin(uv.y * 10.0 + uTime * 1.2) * uVelocity * 0.06;
-    p.z += cos(uv.x * 7.0 + uv.y * 5.0 + uTime * 0.9) * uVelocity * 0.04;
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
@@ -69,21 +68,22 @@ const rippleVertexShader = /* glsl */`
   varying vec2 vUv;
 
   void main() {
-    vUv = uv;
-    vec3 p = position;
+    // UV-space distortion — deforms the texture, works with orthographic camera
+    vec2 wv = uv;
 
     // Scroll wave
-    p.z += sin(uv.x * 10.0 + uTime * 2.0) * uVelocity * 0.10;
-    p.z += sin(uv.y *  8.0 + uTime * 1.4) * uVelocity * 0.07;
+    wv.x += sin(uv.y * 10.0 + uTime * 2.0) * uVelocity * 0.015;
+    wv.y += sin(uv.x *  8.0 + uTime * 1.4) * uVelocity * 0.012;
 
-    // Hover ripple
+    // Hover ripple radiating from mouse
     vec2  d    = uv - uMouse;
     float dist = length(d);
-    float wave = sin(dist * 28.0 - uTime * 7.0) * uHover * 0.035;
+    float wave = sin(dist * 28.0 - uTime * 7.0) * uHover * 0.025;
     wave *= smoothstep(0.65, 0.0, dist);
-    p.z  += wave;
+    wv   += normalize(d + 0.0001) * wave;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+    vUv = wv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
