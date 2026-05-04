@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VELARO — プライベートアイランドリゾート</title>
+<meta name="description" content="インド洋に浮かぶプライベートラグジュアリーアイランド。三十のヴィラ。ひとつの島。風と水が出会う場所。">
+<meta property="og:title" content="VELARO — プライベートアイランドリゾート">
+<meta property="og:description" content="風と水が出会う場所。インド洋のプライベートアイランドリゾート。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* ── 日本語フォントオーバーライド ─────────────────────────────── */
+  body {
+    font-family: 'Noto Sans JP', 'Inter', sans-serif;
+  }
+  /* VELARO ロゴ・英字見出しはラテンセリフのまま */
+  .hero__title,
+  .villas__heading,
+  .exp__heading,
+  .footer__logo {
+    font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
+  }
+  /* 日本語見出しは Noto Serif JP：端正でラグジュアリー */
+  .arrival__heading,
+  .location__heading,
+  .reserve__heading,
+  .exp__name {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+  }
+
+  /* ── 日本語本文：行間を広めに ──────────────────────────────────── */
+  .arrival__copy p,
+  .villa-card__desc,
+  .exp__desc,
+  .location__body,
+  .reserve__sub {
+    font-family: 'Noto Sans JP', sans-serif;
+    line-height: 2.0;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── ヴィラ名は Noto Serif JP ──────────────────────────────────── */
+  .villa-card__name {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── ラベルタブの日本語 ─────────────────────────────────────────── */
+  .villa-card__tab-name {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-style: normal;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── 小見出し・アイブロウ：letter-spacing を和文向けに縮小 ─────── */
+  .arrival__eyebrow,
+  .villas__eyebrow,
+  .exp__eyebrow,
+  .location__eyebrow,
+  .reserve__eyebrow,
+  .footer__col-title {
+    font-family: 'Noto Sans JP', sans-serif;
+    letter-spacing: 0.15em;
+    text-transform: none;
+  }
+
+  /* ── 文字崩れ修正 ───────────────────────────────────────────────── */
+
+  /* ヒーロー eyebrow */
+  .hero__eyebrow {
+    letter-spacing: 0.15em;
+    text-transform: none;
+  }
+
+  /* tagline：和文に italic は適用されないので normal に */
+  .hero__tagline {
+    font-style: normal;
+    letter-spacing: 0.06em;
+  }
+
+  /* ヒーロー CTA */
+  .hero__cta {
+    letter-spacing: 0.15em;
+    text-transform: none;
+  }
+
+  /* ナビリンク */
+  .nav__links a {
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  /* arrival heading：見出しは詰め気味に */
+  .arrival__heading {
+    letter-spacing: 0.02em;
+  }
+
+  /* location heading */
+  .location__heading {
+    letter-spacing: 0.02em;
+  }
+
+  /* ロケーションリンク */
+  .location__link {
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  /* フォームラベル */
+  .reserve__label {
+    letter-spacing: 0.1em;
+    text-transform: none;
+  }
+
+  /* 予約ボタン */
+  .reserve__btn {
+    letter-spacing: 0.1em;
+    text-transform: none;
+  }
+
+  /* footer tagline：italic → normal */
+  .footer__tagline {
+    font-style: normal;
+  }
+
+  /* reserve note：italic → normal */
+  .reserve__note {
+    font-style: normal;
+  }
+
+  /* ── Experiences：横長フルブリードパネル ─────────────────────────── */
+  .experiences {
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 140px;
+  }
+  .exp__header {
+    padding: 0 clamp(40px, 6vw, 100px);
+    margin-bottom: 0;
+  }
+  .exp__grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 4px;
+    max-width: none;
+    margin: 0;
+    counter-reset: exp-counter;
+  }
+  .exp__item {
+    counter-increment: exp-counter;
+    position: relative;
+    height: clamp(340px, 56vh, 600px);
+    overflow: hidden;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(32px, 4vw, 56px) clamp(40px, 7vw, 100px);
+    border: none !important;
+    cursor: default;
+  }
+  /* フルブリード画像 */
+  .exp__img-wrap {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .exp__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+  .exp__item:hover .exp__img {
+    transform: scale(1.06) !important;
+  }
+  /* グラデーションオーバーレイ（奇数：左から） */
+  .exp__item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      112deg,
+      rgba(8,7,4,0.82) 0%,
+      rgba(8,7,4,0.46) 50%,
+      rgba(8,7,4,0.04) 78%
+    );
+    z-index: 1;
+    transition: opacity 0.5s;
+  }
+  /* 偶数：右からグラデーション → テキスト右側 */
+  .exp__item:nth-child(even)::after {
+    background: linear-gradient(
+      -112deg,
+      rgba(8,7,4,0.82) 0%,
+      rgba(8,7,4,0.46) 50%,
+      rgba(8,7,4,0.04) 78%
+    );
+  }
+  /* 番号 */
+  .exp__item::before {
+    content: "0" counter(exp-counter);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    position: relative;
+    z-index: 2;
+    margin-bottom: 14px;
+    display: block;
+    transition: opacity 0.3s;
+  }
+  .exp__item:nth-child(even)::before {
+    align-self: flex-end;
+  }
+  /* カテゴリ名 */
+  .exp__name {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: clamp(3.2rem, 5.5vw, 5.8rem);
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    margin-bottom: 18px;
+    line-height: 1;
+    color: rgba(255,255,255,0.93);
+    position: relative;
+    z-index: 2;
+    transition: letter-spacing 0.7s cubic-bezier(0.22,1,0.36,1);
+  }
+  .exp__item:nth-child(even) .exp__name {
+    align-self: flex-end;
+    text-align: right;
+  }
+  .exp__item:hover .exp__name {
+    letter-spacing: 0.08em;
+  }
+  /* 説明文：ホバーでフェードイン */
+  .exp__desc {
+    font-size: 0.82rem !important;
+    line-height: 1.9 !important;
+    color: rgba(255,255,255,0.65) !important;
+    max-width: 340px;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s 0.08s, transform 0.5s 0.08s;
+  }
+  .exp__item:nth-child(even) .exp__desc {
+    align-self: flex-end;
+    text-align: right;
+  }
+  .exp__item:hover .exp__desc {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* reveal クラスと共存 */
+  .exp__item.reveal { display: flex !important; }
+</style>
+</head>
+<body>
+<canvas id="webgl-bg"></canvas>
+
+<!-- Nav -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">VELARO</a>
+    <nav class="nav__links">
+      <a href="#villas">ヴィラ</a>
+      <a href="#experiences">体験</a>
+      <a href="#location">アクセス</a>
+      <a href="#reserve" class="nav__cta">ご予約</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <p class="hero__eyebrow reveal">プライベートアイランドリゾート &middot; インド洋</p>
+    <h1 class="hero__title reveal reveal-d1">VELARO</h1>
+    <p class="hero__tagline reveal reveal-d2">風と水が出会う場所</p>
+    <a href="#villas" class="hero__cta reveal reveal-d3">詳しく見る</a>
+  </div>
+  <div class="hero__scroll-hint">
+    <span class="hero__scroll-line"></span>
+    <span class="hero__scroll-text">scroll</span>
+  </div>
+</section>
+
+<!-- Arrival -->
+<section class="arrival">
+  <div class="arrival__inner">
+    <div class="arrival__text reveal">
+      <span class="arrival__eyebrow">別世界へ</span>
+      <h2 class="arrival__heading">三十のヴィラ。<br>ひとつの島。<br>時計はない。</h2>
+    </div>
+    <div class="arrival__image-wrap reveal reveal-d1">
+      <img src="images/arrival.jpg" alt="VELAROの空撮" class="arrival__img">
+    </div>
+    <div class="arrival__copy reveal reveal-d2">
+      <p>インド洋の中心に佇むVELAROは、潮の満ち引きだけがスケジュールの場所。三十棟のオーバーウォーターヴィラ、珊瑚礁に縁取られた海、そして人工的には生み出せない、深い静寂がここにある。</p>
+      <p>必要でないものは建てなかった。必要でないものは壊さなかった。残ったのは、島がずっとそうであった姿——そして、ついに静止した、あなた自身。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Villas -->
+<section class="villas" id="villas">
+  <div class="villas__header reveal">
+    <span class="villas__eyebrow">宿泊施設</span>
+    <h2 class="villas__heading">The Villas</h2>
+  </div>
+  <div class="villas__grid">
+
+    <article class="villa-card">
+      <div class="villa-card__media">
+        <img src="images/villa-overwater.jpg" alt="オーバーウォーター ヴィラ" class="villa-card__img villa-card__img--primary">
+        <img src="images/exp-ocean.jpg" alt="" class="villa-card__img villa-card__img--hover" aria-hidden="true">
+        <svg class="villa-card__frame" aria-hidden="true" width="100%" height="100%" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1h284a7 7 0 0 1 7 7v345a7 7 0 0 1-7 7H193a21 21 0 0 0-16.4 7.9l-14.3 18A19 19 0 0 1 147.6 399H8a7 7 0 0 1-7-7V8a7 7 0 0 1 7-7Z" stroke="var(--gold)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <div class="villa-card__num-tab" aria-hidden="true">
+          <span class="villa-card__tab-num">01</span>
+          <span class="villa-card__tab-name">水上</span>
+        </div>
+      </div>
+      <div class="villa-card__body">
+        <h3 class="villa-card__name">オーバーウォーター ヴィラ</h3>
+        <p class="villa-card__desc">ガラス床の礁上に浮かぶラグーンスイート。プライベートプランジプール、海への直接アクセス。</p>
+        <span class="villa-card__price">¥250,000〜 / 泊</span>
+      </div>
+    </article>
+
+    <article class="villa-card">
+      <div class="villa-card__media">
+        <img src="images/villa-beach.jpg" alt="ビーチ ヴィラ" class="villa-card__img villa-card__img--primary">
+        <img src="images/exp-dining.jpg" alt="" class="villa-card__img villa-card__img--hover" aria-hidden="true">
+        <svg class="villa-card__frame" aria-hidden="true" width="100%" height="100%" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1h284a7 7 0 0 1 7 7v345a7 7 0 0 1-7 7H193a21 21 0 0 0-16.4 7.9l-14.3 18A19 19 0 0 1 147.6 399H8a7 7 0 0 1-7-7V8a7 7 0 0 1 7-7Z" stroke="var(--gold)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <div class="villa-card__num-tab" aria-hidden="true">
+          <span class="villa-card__tab-num">02</span>
+          <span class="villa-card__tab-name">浜辺</span>
+        </div>
+      </div>
+      <div class="villa-card__body">
+        <h3 class="villa-card__name">ビーチ ヴィラ</h3>
+        <p class="villa-card__desc">砂浜に直接面したヴィラ。屋外レインシャワー、室内外がシームレスにつながる開放的な居住空間。</p>
+        <span class="villa-card__price">¥200,000〜 / 泊</span>
+      </div>
+    </article>
+
+    <article class="villa-card">
+      <div class="villa-card__media">
+        <img src="images/villa-sunrise.jpg" alt="サンライズ パビリオン" class="villa-card__img villa-card__img--primary">
+        <img src="images/exp-wellness.jpg" alt="" class="villa-card__img villa-card__img--hover" aria-hidden="true">
+        <svg class="villa-card__frame" aria-hidden="true" width="100%" height="100%" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1h284a7 7 0 0 1 7 7v345a7 7 0 0 1-7 7H193a21 21 0 0 0-16.4 7.9l-14.3 18A19 19 0 0 1 147.6 399H8a7 7 0 0 1-7-7V8a7 7 0 0 1 7-7Z" stroke="var(--gold)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <div class="villa-card__num-tab" aria-hidden="true">
+          <span class="villa-card__tab-num">03</span>
+          <span class="villa-card__tab-name">黎明</span>
+        </div>
+      </div>
+      <div class="villa-card__body">
+        <h3 class="villa-card__name">サンライズ パビリオン</h3>
+        <p class="villa-card__desc">島の最高地点、東向き。屋外バスタブから望む、夜明けのホライゾン。</p>
+        <span class="villa-card__price">¥180,000〜 / 泊</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- Experiences -->
+<section class="experiences" id="experiences">
+  <div class="exp__header reveal">
+    <span class="exp__eyebrow">体験</span>
+    <h2 class="exp__heading">Experiences</h2>
+  </div>
+  <div class="exp__grid">
+    <div class="exp__item reveal">
+      <div class="exp__img-wrap">
+        <img src="images/exp-ocean.jpg" alt="海" class="exp__img" loading="lazy">
+      </div>
+      <h3 class="exp__name">Ocean</h3>
+      <p class="exp__desc">リーフシュノーケリング、サンセットセイリング、マンタとのナイトダイブ。</p>
+    </div>
+    <div class="exp__item reveal reveal-d1">
+      <div class="exp__img-wrap">
+        <img src="images/exp-wellness.jpg" alt="ウェルネス" class="exp__img" loading="lazy">
+      </div>
+      <h3 class="exp__name">Wellness</h3>
+      <p class="exp__desc">バリニーズスパ、オープンエアのヨガパビリオン、黄昏時のサウンドヒーリング。</p>
+    </div>
+    <div class="exp__item reveal reveal-d2">
+      <div class="exp__img-wrap">
+        <img src="images/exp-dining.jpg" alt="ダイニング" class="exp__img" loading="lazy">
+      </div>
+      <h3 class="exp__name">Dining</h3>
+      <p class="exp__desc">プライベートビーチディナー、毎朝のマーケットテイスティングメニュー、真夜中の焚き火。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Location -->
+<section class="location" id="location">
+  <div class="location__inner">
+    <div class="location__text reveal">
+      <span class="location__eyebrow">アクセス</span>
+      <h2 class="location__heading">インド洋。<br>水上飛行機で<br>45分。</h2>
+      <p class="location__body">VELAROはマレ国際空港から水上飛行機で45分の場所に位置します。送迎手配はすべてリゾートが承ります。営業期間は10月〜5月です。</p>
+      <a href="#reserve" class="location__link">滞在を計画する →</a>
+    </div>
+    <div class="location__visual reveal reveal-d1">
+      <img src="images/location-seaplane.jpg" alt="VELAROへのシープレーン" class="location__img" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- Reserve -->
+<section class="reserve" id="reserve">
+  <div class="reserve__inner">
+    <span class="reserve__eyebrow reveal">ご予約</span>
+    <h2 class="reserve__heading reveal reveal-d1">旅のはじまり。</h2>
+    <p class="reserve__sub reveal reveal-d2">客室は三十棟限定です。ご予約は3ヶ月前までにお勧めします。</p>
+    <form class="reserve__form reveal reveal-d3" id="reserve-form">
+      <div class="reserve__row">
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-checkin">チェックイン</label>
+          <input class="reserve__input" id="r-checkin" type="date" name="checkin">
+          <span class="reserve__underline"></span>
+        </div>
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-checkout">チェックアウト</label>
+          <input class="reserve__input" id="r-checkout" type="date" name="checkout">
+          <span class="reserve__underline"></span>
+        </div>
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-guests">人数</label>
+          <select class="reserve__input reserve__select" id="r-guests" name="guests">
+            <option value="1">1名</option>
+            <option value="2" selected>2名</option>
+            <option value="3">3名</option>
+            <option value="4">4名以上</option>
+          </select>
+          <span class="reserve__underline"></span>
+        </div>
+      </div>
+      <button class="reserve__btn" type="submit">
+        <span>空室を確認する</span>
+        <span class="reserve__btn-arrow">→</span>
+      </button>
+      <p class="reserve__note">またはメールにて &nbsp;<a href="mailto:reservations@velaro.com">reservations@velaro.com</a></p>
+    </form>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <p class="footer__logo">VELARO</p>
+      <p class="footer__tagline">風と水が出会う場所</p>
+    </div>
+    <div class="footer__cols">
+      <div class="footer__col">
+        <p class="footer__col-title">リゾート</p>
+        <a href="#villas">ヴィラ</a>
+        <a href="#experiences">体験</a>
+        <a href="#location">アクセス</a>
+      </div>
+      <div class="footer__col">
+        <p class="footer__col-title">お問い合わせ</p>
+        <a href="mailto:reservations@velaro.com">reservations@velaro.com</a>
+        <a href="#">Instagram</a>
+      </div>
+    </div>
+  </div>
+  <p class="footer__copy">© 2026 VELARO &mdash; ポートフォリオ作品として制作されたフィクショナルブランドです。</p>
+</footer>
+
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="js/webgl.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

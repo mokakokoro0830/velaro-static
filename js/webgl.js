@@ -2,18 +2,9 @@ import * as THREE from 'three';
 
 // ─── Background vertex shader ────────────────────────────────────────────
 const bgVertexShader = /* glsl */`
-  uniform float uTime;
-  uniform float uVelocity;
   varying vec2 vUv;
-
   void main() {
-    // UV-space wave distortion — actually visible with orthographic camera
-    // (Z displacement has no effect with ortho projection and causes clipping)
-    vec2 wv = uv;
-    wv.x += sin(uv.y * 12.0 + uTime * 1.2) * uVelocity * 0.012;
-    wv.y += sin(uv.x * 10.0 + uTime * 0.9) * uVelocity * 0.010;
-    vUv = wv;
-
+    vUv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
@@ -23,36 +14,85 @@ const bgFragmentShader = /* glsl */`
   uniform sampler2D uTexture;
   uniform float     uTime;
   uniform float     uVelocity;
-  uniform float     uProgress; // 0–1 through full page
+  uniform float     uProgress;
 
   varying vec2 vUv;
 
+  // ── Hash / noise / FBM ──────────────────────────────────────────────────
+  float hash21(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+  }
+  float vnoise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = smoothstep(0.0, 1.0, fract(p));
+    return mix(
+      mix(hash21(i),              hash21(i + vec2(1.0, 0.0)), f.x),
+      mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x),
+      f.y
+    );
+  }
+  float fbm(vec2 p) {
+    float v = 0.0; float a = 0.5;
+    for (int i = 0; i < 5; i++) {
+      v += a * vnoise(p);
+      p  = p * 2.07 + vec2(1.7, 9.2);
+      a *= 0.5;
+    }
+    return v;
+  }
+
+  // ── Caustics: refracted water-light shimmer ──────────────────────────────
+  float caustic(vec2 uv, float t) {
+    vec2 p = uv * 3.5;
+    float a = fbm(p + vec2( t * 0.13,  t * 0.07));
+    float b = fbm(p + vec2(-t * 0.09,  t * 0.11) + vec2(3.7, 2.1));
+    // Bright crests where two FBM fields nearly cancel
+    return pow(clamp(1.0 - abs(sin(a * 6.28 - b * 4.2)), 0.0, 1.0), 5.0);
+  }
+
+  // ── Film grain ───────────────────────────────────────────────────────────
+  float grain(vec2 uv, float t) {
+    vec2 p = fract(uv * 256.0 + vec2(t * 0.013, t * 0.009));
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+  }
+
   void main() {
-    // Slow parallax: zoom out + drift as we scroll
+    // Ken Burns: slow breathe + gentle horizontal drift
     vec2 uv = vUv;
-    float zoom = 1.0 + uProgress * 0.18;
-    uv = (uv - 0.5) / zoom + 0.5;
-    uv.y += uProgress * 0.06;
+    float breathe = 1.0 + sin(uTime * 0.12) * 0.012 + uProgress * 0.12;
+    uv = (uv - 0.5) / breathe + 0.5;
+    uv.y += uProgress * 0.05;
+    uv.x += sin(uTime * 0.07) * 0.006;
 
-    // Chromatic aberration on scroll
-    float shift = abs(uVelocity) * 0.006;
-    float r = texture2D(uTexture, uv + vec2(shift,  0.0)).r;
-    float g = texture2D(uTexture, uv                    ).g;
-    float b = texture2D(uTexture, uv - vec2(shift,  0.0)).b;
-
+    // Chromatic aberration — only during scroll
+    float shift = abs(uVelocity) * 0.0025;
+    float r = texture2D(uTexture, uv + vec2(shift, 0.0)).r;
+    float g = texture2D(uTexture, uv                   ).g;
+    float b = texture2D(uTexture, uv - vec2(shift, 0.0)).b;
     vec3 col = vec3(r, g, b);
 
-    // Subtle vignette
-    float d = length(vUv - 0.5) * 1.4;
-    col *= 1.0 - d * d * 0.3;
+    // ── Caustics overlay ─────────────────────────────────────────────────
+    // Fades out as you scroll deeper (surface light fades with depth)
+    float cStrength = caustic(vUv, uTime) * (1.0 - uProgress * 0.8) * 0.11;
+    col += cStrength * vec3(0.82, 0.95, 1.0);   // cool water-light tint
+
+    // Vignette
+    float d = length(vUv - 0.5) * 1.3;
+    col *= 1.0 - d * d * 0.35;
 
     // Darken as scroll deepens
     col *= 1.0 - uProgress * 0.28;
 
-    // Shimmer — fades out as page darkens
-    float shimmer = sin(vUv.x * 60.0 - uTime * 2.5) * 0.5 + 0.5;
-    shimmer      *= sin(vUv.y * 40.0 + uTime * 1.8) * 0.5 + 0.5;
-    col          += shimmer * 0.014 * (1.0 - uProgress);
+    // ── Scroll color grade: warm golden → deep ocean blue ────────────────
+    float p2 = smoothstep(0.0, 1.0, uProgress); // linear ease
+    vec3 warmTint = vec3(1.03, 0.98, 0.91);      // subtle golden hour
+    vec3 coolTint = vec3(0.88, 0.94, 1.04);      // subtle deep water
+    vec3 tint = mix(warmTint, coolTint, p2);
+    col *= tint;
+
+    // ── Film grain — pulses with velocity, stays subtle ──────────────────
+    float grainAmt = 0.024 + abs(uVelocity) * 0.05;
+    col += (grain(vUv, uTime) - 0.5) * grainAmt;
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -61,19 +101,13 @@ const bgFragmentShader = /* glsl */`
 // ─── Ripple vertex shader (villa cards) ──────────────────────────────────
 const rippleVertexShader = /* glsl */`
   uniform float uTime;
-  uniform float uVelocity;
   uniform vec2  uMouse;
   uniform float uHover;
 
   varying vec2 vUv;
 
   void main() {
-    // UV-space distortion — deforms the texture, works with orthographic camera
     vec2 wv = uv;
-
-    // Scroll wave
-    wv.x += sin(uv.y * 10.0 + uTime * 2.0) * uVelocity * 0.015;
-    wv.y += sin(uv.x *  8.0 + uTime * 1.4) * uVelocity * 0.012;
 
     // Hover ripple radiating from mouse
     vec2  d    = uv - uMouse;
@@ -102,7 +136,16 @@ const rippleFragmentShader = /* glsl */`
     float b = texture2D(uTexture, vUv - vec2(shift,  0.0)).b;
     float a = texture2D(uTexture, vUv                    ).a;
 
-    vec3 col = vec3(r, g, b) * (1.0 + uHover * 0.06);
+    vec3 col = vec3(r, g, b);
+
+    // ── Vignette: dissolves on hover ──────────────────────────────────────
+    float vignStrength = mix(0.55, 0.0, uHover);  // full vignette → clear
+    float d = length(vUv - 0.5) * 1.5;
+    col *= 1.0 - d * d * vignStrength;
+
+    // ── Brightness & warmth lift on hover ────────────────────────────────
+    col *= 1.0 + uHover * 0.12;
+    col = mix(col, col * vec3(1.04, 1.01, 0.97), uHover * 0.5); // warm push
     gl_FragColor = vec4(col, a);
   }
 `;
