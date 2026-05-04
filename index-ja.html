@@ -440,12 +440,12 @@
       <div class="reserve__row">
         <div class="reserve__group">
           <label class="reserve__label" for="r-checkin">チェックイン</label>
-          <input class="reserve__input" id="r-checkin" type="date" name="checkin">
+          <input class="reserve__input" id="r-checkin" type="date" name="checkin" required>
           <span class="reserve__underline"></span>
         </div>
         <div class="reserve__group">
           <label class="reserve__label" for="r-checkout">チェックアウト</label>
-          <input class="reserve__input" id="r-checkout" type="date" name="checkout">
+          <input class="reserve__input" id="r-checkout" type="date" name="checkout" required>
           <span class="reserve__underline"></span>
         </div>
         <div class="reserve__group">
@@ -456,6 +456,34 @@
             <option value="3">3名</option>
             <option value="4">4名以上</option>
           </select>
+          <span class="reserve__underline"></span>
+        </div>
+      </div>
+      <div class="reserve__row">
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-villa">ヴィラ</label>
+          <select class="reserve__input reserve__select" id="r-villa" name="villa">
+            <option value="overwater" selected>オーバーウォーター</option>
+            <option value="beach">ビーチ</option>
+            <option value="sunrise">サンライズ</option>
+          </select>
+          <span class="reserve__underline"></span>
+        </div>
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-name">お名前</label>
+          <input class="reserve__input" id="r-name" type="text" name="name" placeholder="山田　太郎" required>
+          <span class="reserve__underline"></span>
+        </div>
+      </div>
+      <div class="reserve__row">
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-email">メールアドレス</label>
+          <input class="reserve__input" id="r-email" type="email" name="email" placeholder="email@example.com" required>
+          <span class="reserve__underline"></span>
+        </div>
+        <div class="reserve__group">
+          <label class="reserve__label" for="r-phone">電話番号</label>
+          <input class="reserve__input" id="r-phone" type="tel" name="phone" placeholder="090-0000-0000">
           <span class="reserve__underline"></span>
         </div>
       </div>

@@ -16,13 +16,44 @@ const revealObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 revealEls.forEach(el => revealObs.observe(el));
 
-// Reserve form (demo)
+// Reserve form — POST to velaro-booking API
+const RESERVATIONS_API = 'https://velaro-booking.vercel.app/api/reservations';
 const form = document.getElementById('reserve-form');
 if (form) {
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = form.querySelector('.reserve__btn span');
-    btn.textContent = 'Enquiry Sent — We\'ll be in touch.';
-    form.querySelector('.reserve__btn').disabled = true;
+    const btnEl = form.querySelector('.reserve__btn');
+    const btn = btnEl.querySelector('span');
+    const originalText = btn.textContent;
+
+    btn.textContent = '送信中…';
+    btnEl.disabled = true;
+
+    const data = {
+      checkin: form.checkin.value,
+      checkout: form.checkout.value,
+      guests: Number(form.guests.value),
+      villa: form.villa.value,
+      name: form.name.value,
+      email: form.email.value,
+      phone: form.phone.value,
+    };
+
+    try {
+      const res = await fetch(RESERVATIONS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || '送信に失敗しました');
+      }
+      btn.textContent = 'お問い合わせを受け付けました — 確認メールをお送りしました。';
+    } catch (err) {
+      btn.textContent = `送信失敗: ${err.message}`;
+      btnEl.disabled = false;
+      setTimeout(() => { btn.textContent = originalText; }, 4000);
+    }
   });
 }
