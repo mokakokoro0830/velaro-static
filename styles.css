@@ -434,115 +434,12 @@ a { color: inherit; text-decoration: none; }
   color: rgba(28,24,16,0.6);
   margin-bottom: 16px;
 }
-.villa-card__specs {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  border-top: 1px solid rgba(28,24,16,0.08);
-  border-bottom: 1px solid rgba(28,24,16,0.08);
-  padding: 14px 0;
-}
-.villa-card__specs li {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 0.74rem;
-  letter-spacing: 0.02em;
-}
-.villa-card__specs li span:first-child {
-  color: rgba(28,24,16,0.45);
-  font-family: var(--serif);
-  font-style: italic;
-}
-.villa-card__specs li span:last-child {
-  color: var(--dark);
-  text-align: right;
-}
 .villa-card__price {
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   color: var(--gold);
   font-family: var(--serif);
   font-style: italic;
-}
-
-/* ─── Gallery ─── */
-.gallery {
-  position: relative;
-  z-index: 1;
-  padding: 140px 48px;
-  background: var(--white);
-}
-.gallery__header { text-align: center; max-width: 800px; margin: 0 auto 60px; }
-.gallery__eyebrow {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 0.78rem;
-  letter-spacing: 0.3em;
-  color: var(--gold);
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 18px;
-}
-.gallery__heading {
-  font-family: var(--jp-mincho, var(--serif));
-  font-size: clamp(2rem, 4.5vw, 3rem);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  color: var(--dark);
-  margin: 0 0 14px;
-}
-.gallery__sub {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 0.85rem;
-  color: rgba(28,24,16,0.45);
-  letter-spacing: 0.1em;
-  margin: 0;
-}
-.gallery__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  max-width: 1280px;
-  margin: 0 auto;
-}
-.gallery__item {
-  position: relative;
-  margin: 0;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-}
-.gallery__item--wide { grid-column: span 2; }
-.gallery__item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s ease;
-  display: block;
-}
-.gallery__item:hover img { transform: scale(1.04); }
-.gallery__item figcaption {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 24px 20px 18px;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  color: #fff;
-  background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.gallery__item:hover figcaption { opacity: 1; }
-@media (max-width: 800px) {
-  .gallery { padding: 80px 24px; }
-  .gallery__grid { grid-template-columns: 1fr; }
-  .gallery__item--wide { grid-column: auto; }
 }
 
 /* ─── Experiences ─── */
